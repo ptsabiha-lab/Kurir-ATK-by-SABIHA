@@ -1,64 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../providers/auth_provider.dart';
-import '../auth/login_screen.dart';
+import '../catalog/product_list_screen.dart';
+import 'profile_tab.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  Future<void> _logout(BuildContext context) async {
-    final authProvider = context.read<AuthProvider>();
-    await authProvider.logout();
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-    if (!context.mounted) return;
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
 
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false,
-    );
-  }
+  static const _tabs = [
+    ProductListScreen(),
+    ProfileTab(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().user;
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kurir ATK'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Keluar',
-            onPressed: () => _logout(context),
-          ),
+      body: IndexedStack(index: _currentIndex, children: _tabs),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) => setState(() => _currentIndex = index),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.storefront_outlined), selectedIcon: Icon(Icons.storefront), label: 'Katalog'),
+          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profil'),
         ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.check_circle, size: 64, color: Colors.green),
-            const SizedBox(height: 16),
-            Text(
-              'Selamat datang, ${user?.name ?? ''}!',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text('Role: ${user?.role ?? '-'}'),
-            const SizedBox(height: 8),
-            Text(user?.email ?? ''),
-            const SizedBox(height: 24),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                'Katalog produk, pemesanan, dan tracking pengiriman akan dibangun di sini.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
