@@ -110,7 +110,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           disabledBackgroundColor: AppColors.border,
           disabledForegroundColor: AppColors.textMuted,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(64, 52),
           shape: roundedMd,
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, letterSpacing: 0.2),
         ),
@@ -118,7 +118,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          minimumSize: const Size.fromHeight(52),
+          minimumSize: const Size(64, 52),
           side: const BorderSide(color: AppColors.border),
           shape: roundedMd,
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
 import 'package:kurir_atk/models/category.dart';
 import 'package:kurir_atk/models/product.dart';
+import 'package:kurir_atk/providers/cart_provider.dart';
+import 'package:kurir_atk/screens/cart/cart_screen.dart';
 import 'package:kurir_atk/theme/app_theme.dart';
 import 'package:kurir_atk/widgets/product_card.dart';
 import 'package:kurir_atk/widgets/state_view.dart';
@@ -58,5 +61,23 @@ void main() {
 
     await tester.tap(find.text('Coba Lagi'));
     expect(tapped, isTrue);
+  });
+
+  testWidgets('Keranjang dengan tema aplikasi menampilkan total & tombol Checkout', (tester) async {
+    // Regresi: tombol bertema lebar penuh di dalam Row membuat total
+    // tersusun vertikal dan tombol Checkout hilang.
+    final cart = CartProvider()..add(_product(), quantity: 3);
+    await tester.pumpWidget(
+      ChangeNotifierProvider.value(
+        value: cart,
+        child: MaterialApp(theme: AppTheme.light, home: const CartScreen()),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Checkout'), findsOneWidget);
+    expect(find.text('Total (3 item)'), findsOneWidget);
+    final checkoutWidth = tester.getSize(find.widgetWithText(FilledButton, 'Checkout')).width;
+    expect(checkoutWidth, lessThan(tester.view.physicalSize.width / tester.view.devicePixelRatio / 2));
   });
 }

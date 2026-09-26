@@ -48,6 +48,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ..showSnackBar(
         SnackBar(
           content: Text('$added ${product.unit} ${product.name} ditambahkan ke keranjang.'),
+          // SnackBar yang punya tombol aksi defaultnya tidak hilang sendiri dan
+          // akan menutupi tombol Checkout di tab Keranjang.
+          persist: false,
+          duration: const Duration(seconds: 3),
           action: SnackBarAction(
             label: 'LIHAT',
             onPressed: () =>

@@ -7,6 +7,7 @@ import '../../providers/catalog_provider.dart';
 import '../../providers/order_events.dart';
 import '../../services/api_client.dart';
 import '../../services/order_service.dart';
+import '../../theme/app_colors.dart';
 import '../orders/order_detail_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -146,7 +147,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
                   )
                 : Text('Buat Pesanan • ${formatRupiah(cart.totalPrice)}'),
           ),

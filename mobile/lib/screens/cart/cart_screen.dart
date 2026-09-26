@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../models/product.dart';
 import '../../providers/cart_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/product_image.dart';
 import 'checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
@@ -119,14 +120,13 @@ class _CartItemTile extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 56,
+                height: 56,
+                child: ProductImage(product: product, iconSize: 18),
               ),
-              child: const Icon(Icons.inventory_2_outlined),
             ),
             const SizedBox(width: 12),
             Expanded(
