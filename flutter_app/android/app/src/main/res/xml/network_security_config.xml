@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default: hanya HTTPS. HTTP biasa hanya diizinkan ke localhost, yaitu
+     backend Laravel di laptop yang diteruskan ke HP lewat kabel USB
+     (adb reverse, lihat install_hp.sh). -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>
