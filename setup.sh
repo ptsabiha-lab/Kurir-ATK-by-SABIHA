@@ -1,13 +1,17 @@
 #!/bin/bash
 # Setup otomatis backend Laravel untuk Kurir ATK.
-# Jalankan dari dalam folder project: bash setup.sh
+# Jalankan dari root folder project: bash setup.sh
 
 set -e
 
+cd "$(dirname "$0")/backend" 2>/dev/null || {
+  echo "ERROR: Folder 'backend' tidak ditemukan."
+  echo "Pastikan script ini ada di root folder Kurir-ATK-by-SABIHA."
+  exit 1
+}
+
 if [ ! -f "artisan" ]; then
-  echo "ERROR: File 'artisan' tidak ditemukan di folder ini."
-  echo "Pastikan Anda menjalankan script ini dari dalam folder Kurir-ATK-by-SABIHA."
-  echo "Coba: cd ~/Documents/Kurir-ATK-by-SABIHA lalu jalankan lagi: bash setup.sh"
+  echo "ERROR: File 'artisan' tidak ditemukan di folder backend/."
   exit 1
 fi
 
@@ -54,11 +58,10 @@ echo "  SETUP SELESAI!"
 echo "=================================================="
 echo ""
 echo "Langkah berikutnya:"
-echo "  1. Jalankan backend:  php artisan serve"
-echo "  2. Di terminal BARU, jalankan Flutter:"
-echo "       cd flutter_app"
-echo "       flutter pub get"
-echo "       flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:8000/api"
+echo "  1. Jalankan backend:"
+echo "       cd backend && php artisan serve --host=0.0.0.0"
+echo "  2. Buka folder 'mobile' di Android Studio, jalankan emulator, lalu tekan Run."
+echo "     (Emulator otomatis terhubung ke http://10.0.2.2:8000/api)"
 echo ""
 echo "Akun demo:"
 echo "  Admin    : admin@kuriratk.test / password"
