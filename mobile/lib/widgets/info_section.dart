@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 /// Kartu berjudul untuk mengelompokkan informasi di halaman detail.
 class InfoSection extends StatelessWidget {
@@ -40,7 +41,7 @@ class InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: Colors.grey),
+          Icon(icon, size: 20, color: AppColors.textMuted),
           const SizedBox(width: 12),
           Expanded(child: Text(text)),
         ],

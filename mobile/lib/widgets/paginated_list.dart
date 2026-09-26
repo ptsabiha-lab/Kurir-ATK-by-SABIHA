@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/api_client.dart';
 import '../services/order_service.dart';
+import '../theme/app_colors.dart';
 
 typedef PageLoader<T> = Future<Paginated<T>> Function(int page);
 
@@ -165,7 +166,7 @@ class _MessageView extends StatelessWidget {
       padding: const EdgeInsets.all(32),
       children: [
         const SizedBox(height: 80),
-        Icon(icon, size: 64, color: Colors.grey),
+        Icon(icon, size: 64, color: AppColors.textMuted),
         const SizedBox(height: 16),
         Text(message, textAlign: TextAlign.center),
         if (onRetry != null) ...[

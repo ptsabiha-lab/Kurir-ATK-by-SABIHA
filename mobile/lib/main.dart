@@ -7,6 +7,7 @@ import 'providers/cart_provider.dart';
 import 'providers/catalog_provider.dart';
 import 'providers/order_events.dart';
 import 'screens/splash_screen.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,10 +30,7 @@ class KurirAtkApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Kurir ATK',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorSchemeSeed: Colors.indigo,
-          useMaterial3: true,
-        ),
+        theme: AppTheme.light,
         home: const SplashScreen(),
       ),
     );

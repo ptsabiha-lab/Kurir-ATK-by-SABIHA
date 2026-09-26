@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../config/api_config.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/app_colors.dart';
 import '../../widgets/server_settings_dialog.dart';
 import '../home/home_screen.dart';
+import 'auth_scaffold.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -29,24 +31,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
 
     final authProvider = context.read<AuthProvider>();
-    final success = await authProvider.login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
+    final success = await authProvider.login(_emailController.text.trim(), _passwordController.text);
 
     if (!mounted) return;
 
     if (success) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false,
-      );
+      Navigator.of(context)
+          .pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const HomeScreen()), (route) => false);
     } else if (authProvider.errorMessage != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(authProvider.errorMessage!)),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(authProvider.errorMessage!)));
     }
   }
 
@@ -54,100 +50,87 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            tooltip: 'Pengaturan server',
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () async {
-              await showServerSettingsDialog(context);
-              if (mounted) setState(() {});
-            },
+    return AuthScaffold(
+      title: 'Selamat datang kembali',
+      subtitle: 'Masuk untuk mulai belanja kebutuhan ATK Anda.',
+      headerAction: IconButton(
+        tooltip: 'Pengaturan server',
+        icon: const Icon(Icons.settings_outlined, color: Colors.white),
+        onPressed: () async {
+          await showServerSettingsDialog(context);
+          if (mounted) setState(() {});
+        },
+      ),
+      footer: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Belum punya akun?', style: TextStyle(color: AppColors.textSecondary)),
+              TextButton(
+                onPressed: authProvider.isLoading
+                    ? null
+                    : () =>
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (_) => const RegisterScreen())),
+                child: const Text('Daftar sekarang'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Server: ${ApiConfig.baseUrl}',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
           ),
         ],
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(Icons.local_shipping_rounded, size: 64, color: Colors.indigo),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Masuk ke Kurir ATK',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 32),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Email wajib diisi';
-                      if (!value.contains('@')) return 'Format email tidak valid';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                        icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Password wajib diisi';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  FilledButton(
-                    onPressed: authProvider.isLoading ? null : _submit,
-                    style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                    child: authProvider.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Text('Masuk'),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: authProvider.isLoading
-                        ? null
-                        : () => Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                            ),
-                    child: const Text('Belum punya akun? Daftar di sini'),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Server: ${ApiConfig.baseUrl}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ],
+      child: Form(
+        key: _formKey,
+        child: AutofillGroup(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.email],
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'nama@email.com',
+                  prefixIcon: Icon(Icons.mail_outline_rounded),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Email wajib diisi';
+                  if (!value.contains('@')) return 'Format email tidak valid';
+                  return null;
+                },
               ),
-            ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.password],
+                onFieldSubmitted: (_) => _submit(),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                    tooltip: _obscurePassword ? 'Tampilkan password' : 'Sembunyikan password',
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Password wajib diisi';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 28),
+              AuthSubmitButton(label: 'Masuk', isLoading: authProvider.isLoading, onPressed: _submit),
+            ],
           ),
         ),
       ),

@@ -1,11 +1,11 @@
 {
-    "name": "kurir_atk",
-    "short_name": "kurir_atk",
+    "name": "Kurir ATK",
+    "short_name": "Kurir ATK",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1560E8",
+    "theme_color": "#1560E8",
+    "description": "Belanja ATK kantor & sekolah, diantar kurir sampai tujuan.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

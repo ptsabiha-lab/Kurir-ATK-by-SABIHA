@@ -9,6 +9,7 @@ import '../../services/order_service.dart';
 import '../../widgets/paginated_list.dart';
 import '../../widgets/status_chip.dart';
 import 'order_detail_screen.dart';
+import '../../theme/app_colors.dart';
 
 /// Pelanggan melihat pesanannya sendiri; admin melihat semua pesanan
 /// dan bisa memfilter berdasarkan status.
@@ -95,7 +96,7 @@ class OrderCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
-              Text(formatDateTime(order.createdAt), style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              Text(formatDateTime(order.createdAt), style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
               if (showCustomer && order.user != null) ...[
                 const SizedBox(height: 4),
                 Text('Pemesan: ${order.user!.name}', style: const TextStyle(fontSize: 13)),
@@ -109,7 +110,7 @@ class OrderCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Text('${order.totalQuantity} item', style: const TextStyle(color: Colors.grey)),
+                  Text('${order.totalQuantity} item', style: const TextStyle(color: AppColors.textSecondary)),
                   const Spacer(),
                   Text(
                     formatRupiah(order.totalPrice),

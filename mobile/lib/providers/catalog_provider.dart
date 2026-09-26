@@ -100,4 +100,10 @@ class CatalogProvider extends ChangeNotifier {
     searchQuery = query;
     loadProducts(reset: true);
   }
+
+  void resetFilters() {
+    selectedCategoryId = null;
+    searchQuery = '';
+    loadProducts(reset: true);
+  }
 }

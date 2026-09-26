@@ -117,7 +117,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 labelText: 'Alamat Pengiriman',
                 hintText: 'Nama instansi, jalan, nomor, kelurahan, kota',
                 prefixIcon: Icon(Icons.location_on_outlined),
-                border: OutlineInputBorder(),
               ),
               validator: (value) => (value == null || value.trim().length < 10)
                   ? 'Alamat pengiriman wajib diisi lengkap'
@@ -132,7 +131,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 labelText: 'Catatan (opsional)',
                 hintText: 'Mis. antar ke bagian TU, jam kerja 08.00–15.00',
                 prefixIcon: Icon(Icons.notes_outlined),
-                border: OutlineInputBorder(),
               ),
             ),
           ],

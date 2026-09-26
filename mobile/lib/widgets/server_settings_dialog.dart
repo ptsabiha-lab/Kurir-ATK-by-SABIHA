@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../config/api_config.dart';
+import '../theme/app_colors.dart';
 
 /// Dialog untuk mengganti alamat server backend tanpa build ulang APK.
 /// Berguna saat aplikasi di-install di HP fisik yang terhubung ke Wi-Fi
@@ -89,7 +90,6 @@ class _ServerSettingsDialogState extends State<_ServerSettingsDialog> {
               autocorrect: false,
               decoration: const InputDecoration(
                 labelText: 'URL API',
-                border: OutlineInputBorder(),
                 isDense: true,
               ),
               onChanged: (_) => setState(() => _result = null),
@@ -97,7 +97,7 @@ class _ServerSettingsDialogState extends State<_ServerSettingsDialog> {
             const SizedBox(height: 4),
             Text(
               'Default: ${ApiConfig.defaultUrl}',
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
+              style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
@@ -111,7 +111,7 @@ class _ServerSettingsDialogState extends State<_ServerSettingsDialog> {
               const SizedBox(height: 8),
               Text(
                 _result!,
-                style: TextStyle(fontSize: 13, color: _success ? Colors.green : Colors.red),
+                style: TextStyle(fontSize: 13, color: _success ? AppColors.success : AppColors.danger),
               ),
             ],
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/order.dart';
+import '../theme/app_colors.dart';
 
 /// Label status berwarna untuk pesanan maupun pengiriman.
 class StatusChip extends StatelessWidget {
@@ -16,22 +17,22 @@ class StatusChip extends StatelessWidget {
   final Color color;
 
   static Color _orderColor(String status) => switch (status) {
-        'pending' => Colors.orange,
-        'confirmed' => Colors.blue,
-        'processing' => Colors.indigo,
+        'pending' => AppColors.warning,
+        'confirmed' => AppColors.sky,
+        'processing' => AppColors.primary,
         'shipped' => Colors.purple,
-        'delivered' => Colors.green,
-        'cancelled' => Colors.red,
-        _ => Colors.grey,
+        'delivered' => AppColors.success,
+        'cancelled' => AppColors.danger,
+        _ => AppColors.textMuted,
       };
 
   static Color _deliveryColor(String status) => switch (status) {
-        'assigned' => Colors.orange,
-        'picked_up' => Colors.blue,
+        'assigned' => AppColors.warning,
+        'picked_up' => AppColors.primary,
         'in_transit' => Colors.purple,
-        'delivered' => Colors.green,
-        'failed' => Colors.red,
-        _ => Colors.grey,
+        'delivered' => AppColors.success,
+        'failed' => AppColors.danger,
+        _ => AppColors.textMuted,
       };
 
   @override

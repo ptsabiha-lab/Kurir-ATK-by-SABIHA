@@ -6,6 +6,12 @@ import '../../providers/auth_provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../services/api_client.dart';
 import '../../services/catalog_service.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/category_style.dart';
+import '../../widgets/product_image.dart';
+import '../../widgets/skeleton.dart';
+import '../../widgets/state_view.dart';
 import '../cart/cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -27,152 +33,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     _productFuture = CatalogService.instance.fetchProduct(widget.productId);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Detail Produk')),
-      body: FutureBuilder<Product>(
-        future: _productFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(apiErrorMessage(snapshot.error!), textAlign: TextAlign.center),
-              ),
-            );
-          }
-
-          final product = snapshot.data!;
-
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 220,
-                  width: double.infinity,
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.inventory_2_outlined,
-                    size: 72,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (product.category != null)
-                        Chip(
-                          label: Text(product.category!.name),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      const SizedBox(height: 8),
-                      Text(
-                        product.name,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        formatRupiah(product.price),
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'per ${product.unit} • SKU: ${product.sku}',
-                        style: const TextStyle(color: Colors.grey),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Icon(
-                            product.inStock ? Icons.check_circle : Icons.cancel,
-                            size: 18,
-                            color: product.inStock ? Colors.green : Colors.red,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            product.inStock
-                                ? 'Stok tersedia: ${product.stock} ${product.unit}'
-                                : 'Stok habis',
-                          ),
-                        ],
-                      ),
-                      if (product.description != null) ...[
-                        const SizedBox(height: 20),
-                        const Text('Deskripsi', style: TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Text(product.description!),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: FutureBuilder<Product>(
-        future: _productFuture,
-        builder: (context, snapshot) {
-          final product = snapshot.data;
-          // Hanya pelanggan yang memesan; admin & kurir cukup melihat katalog.
-          final user = context.watch<AuthProvider>().user;
-          final canOrder = !(user?.isAdmin ?? false) && !(user?.isKurir ?? false);
-          if (product == null || !canOrder) return const SizedBox.shrink();
-
-          final inCart = context.watch<CartProvider>().quantityOf(product.id);
-          final available = product.stock - inCart;
-
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (inCart > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Text('Sudah ada $inCart ${product.unit} di keranjang',
-                          style: const TextStyle(color: Colors.grey)),
-                    ),
-                  Row(
-                    children: [
-                      QuantityStepper(
-                        value: available > 0 ? _quantity.clamp(1, available) : 0,
-                        min: available > 0 ? 1 : 0,
-                        max: available,
-                        onChanged: (value) => setState(() => _quantity = value),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: available > 0 ? () => _addToCart(product, available) : null,
-                          icon: const Icon(Icons.add_shopping_cart),
-                          label: Text(product.inStock ? 'Tambah ke Keranjang' : 'Stok Habis'),
-                          style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
+  void _retry() {
+    setState(() {
+      _productFuture = CatalogService.instance.fetchProduct(widget.productId);
+    });
   }
 
   void _addToCart(Product product, int available) {
@@ -181,14 +45,477 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text('$added ${product.unit} ${product.name} ditambahkan ke keranjang.'),
-        action: SnackBarAction(
-          label: 'LIHAT',
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const CartScreen()),
+      ..showSnackBar(
+        SnackBar(
+          content: Text('$added ${product.unit} ${product.name} ditambahkan ke keranjang.'),
+          action: SnackBarAction(
+            label: 'LIHAT',
+            onPressed: () =>
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartScreen())),
           ),
         ),
-      ));
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Product>(
+      future: _productFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const _DetailSkeleton();
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Detail Produk')),
+            body: StateView(
+              isError: true,
+              icon: Icons.wifi_off_rounded,
+              title: 'Gagal memuat produk',
+              message: apiErrorMessage(snapshot.error!),
+              actionLabel: 'Coba Lagi',
+              onAction: _retry,
+            ),
+          );
+        }
+
+        final product = snapshot.data!;
+        // Hanya pelanggan yang memesan; admin & kurir cukup melihat katalog.
+        final user = context.watch<AuthProvider>().user;
+        final canOrder = !(user?.isAdmin ?? false) && !(user?.isKurir ?? false);
+        final inCart = context.watch<CartProvider>().quantityOf(product.id);
+        final available = product.stock - inCart;
+
+        return Scaffold(
+          body: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                expandedHeight: 320,
+                backgroundColor: AppColors.surface,
+                leading: const _CircleBackButton(),
+                title: const Text('Detail Produk'),
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.parallax,
+                  background: ProductImage(product: product, iconSize: 84),
+                ),
+              ),
+              SliverToBoxAdapter(child: _SummarySection(product: product)),
+              SliverToBoxAdapter(child: _InfoSection(product: product)),
+              if (product.description != null && product.description!.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: _Section(
+                    title: 'Deskripsi Produk',
+                    child: Text(
+                      product.description!,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14.5),
+                    ),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: _DeliverySection()),
+              const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            ],
+          ),
+          bottomNavigationBar: canOrder
+              ? _BottomActionBar(
+                  product: product,
+                  inCart: inCart,
+                  available: available,
+                  quantity: available > 0 ? _quantity.clamp(1, available) : 1,
+                  onQuantityChanged: (value) => setState(() => _quantity = value),
+                  onAddToCart: () => _addToCart(product, available),
+                )
+              : null,
+        );
+      },
+    );
+  }
+}
+
+class _CircleBackButton extends StatelessWidget {
+  const _CircleBackButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Material(
+        color: Colors.white,
+        shape: const CircleBorder(side: BorderSide(color: AppColors.border)),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: () => Navigator.of(context).maybePop(),
+          child: const Tooltip(
+            message: 'Kembali',
+            child: Icon(Icons.arrow_back_rounded, size: 20, color: AppColors.textPrimary),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Blok putih dengan judul, dipisah jarak abu-abu antar blok.
+class _Section extends StatelessWidget {
+  const _Section({this.title, required this.child});
+
+  final String? title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+      color: AppColors.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title != null) ...[
+            Text(title!, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+          ],
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _SummarySection extends StatelessWidget {
+  const _SummarySection({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      color: AppColors.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            formatRupiah(product.price),
+            style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: AppColors.primary,
+              letterSpacing: -0.5,
+            ),
+          ),
+          Text('per ${product.unit}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          const SizedBox(height: 12),
+          Text(
+            product.name,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20, height: 1.3),
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (product.category != null)
+                _Pill(
+                  icon: CategoryStyle.of(product.category!.slug).icon,
+                  label: product.category!.name,
+                  color: AppColors.primary,
+                  background: AppColors.primarySoft,
+                ),
+              product.inStock
+                  ? _Pill(
+                      icon: Icons.check_circle_rounded,
+                      label: 'Stok tersedia',
+                      color: AppColors.success,
+                      background: AppColors.successSoft,
+                    )
+                  : const _Pill(
+                      icon: Icons.cancel_rounded,
+                      label: 'Stok habis',
+                      color: AppColors.danger,
+                      background: AppColors.dangerSoft,
+                    ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Pill extends StatelessWidget {
+  const _Pill({required this.icon, required this.label, required this.color, required this.background});
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(20)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: color),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(color: color, fontSize: 12.5, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoSection extends StatelessWidget {
+  const _InfoSection({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = [
+      ('Kategori', product.category?.name ?? '-'),
+      ('SKU', product.sku),
+      ('Satuan', product.unit),
+      ('Stok', product.inStock ? '${product.stock} ${product.unit}' : 'Habis'),
+    ];
+
+    return _Section(
+      title: 'Informasi Produk',
+      child: Column(
+        children: [
+          for (var i = 0; i < rows.length; i++) ...[
+            if (i > 0) const SizedBox(height: 10),
+            Row(
+              children: [
+                SizedBox(
+                  width: 110,
+                  child: Text(
+                    rows[i].$1,
+                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    rows[i].$2,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _DeliverySection extends StatelessWidget {
+  const _DeliverySection();
+
+  @override
+  Widget build(BuildContext context) {
+    return _Section(
+      title: 'Pengiriman',
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: AppColors.primarySoft,
+              borderRadius: BorderRadius.circular(AppTheme.radiusSm + 2),
+            ),
+            child: const Icon(Icons.local_shipping_rounded, color: AppColors.primary),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Diantar oleh Kurir ATK',
+                  style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Pesanan diantar langsung ke alamat kantor atau sekolah Anda.',
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BottomActionBar extends StatelessWidget {
+  const _BottomActionBar({
+    required this.product,
+    required this.inCart,
+    required this.available,
+    required this.quantity,
+    required this.onQuantityChanged,
+    required this.onAddToCart,
+  });
+
+  final Product product;
+  final int inCart;
+
+  /// Stok yang masih bisa ditambahkan (stok dikurangi isi keranjang).
+  final int available;
+  final int quantity;
+  final ValueChanged<int> onQuantityChanged;
+  final VoidCallback onAddToCart;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: const Border(top: BorderSide(color: AppColors.border)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navy.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (inCart > 0)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'Sudah ada $inCart ${product.unit} di keranjang',
+                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                  ),
+                ),
+              Row(
+                children: [
+                  if (available > 0) ...[
+                    _QuantityStepper(value: quantity, max: available, onChanged: onQuantityChanged),
+                    const SizedBox(width: 12),
+                  ],
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: available > 0 ? onAddToCart : null,
+                      icon: Icon(
+                        available > 0 ? Icons.add_shopping_cart_rounded : Icons.block_rounded,
+                        size: 20,
+                      ),
+                      label: Text(
+                        available > 0
+                            ? 'Tambah • ${formatRupiah(product.price * quantity)}'
+                            : (product.inStock ? 'Stok di keranjang penuh' : 'Stok Habis'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuantityStepper extends StatelessWidget {
+  const _QuantityStepper({required this.value, required this.max, required this.onChanged});
+
+  final int value;
+  final int max;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: value > 1 ? () => onChanged(value - 1) : null,
+            icon: const Icon(Icons.remove_rounded, size: 20),
+            color: AppColors.primary,
+            tooltip: 'Kurangi',
+          ),
+          SizedBox(
+            width: 28,
+            child: Text(
+              '$value',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
+          ),
+          IconButton(
+            onPressed: value < max ? () => onChanged(value + 1) : null,
+            icon: const Icon(Icons.add_rounded, size: 20),
+            color: AppColors.primary,
+            tooltip: 'Tambah',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailSkeleton extends StatelessWidget {
+  const _DetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Detail Produk')),
+      body: ListView(
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [
+          SkeletonBox(height: 280, radius: 0),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonBox(width: 140, height: 26),
+                SizedBox(height: 16),
+                SkeletonBox(height: 18),
+                SizedBox(height: 8),
+                SkeletonBox(width: 200, height: 18),
+                SizedBox(height: 20),
+                Row(
+                  children: [
+                    SkeletonBox(width: 100, height: 28, radius: 20),
+                    SizedBox(width: 8),
+                    SkeletonBox(width: 110, height: 28, radius: 20),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

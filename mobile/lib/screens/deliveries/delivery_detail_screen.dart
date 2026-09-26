@@ -7,6 +7,7 @@ import '../../services/api_client.dart';
 import '../../services/order_service.dart';
 import '../../widgets/info_section.dart';
 import '../../widgets/status_chip.dart';
+import '../../theme/app_colors.dart';
 
 class DeliveryDetailScreen extends StatefulWidget {
   const DeliveryDetailScreen({super.key, required this.deliveryId});
@@ -85,7 +86,6 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen> {
           decoration: const InputDecoration(
             labelText: 'Alasan',
             hintText: 'Mis. penerima tidak ada di tempat',
-            border: OutlineInputBorder(),
           ),
         ),
         actions: [
@@ -202,7 +202,7 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen> {
                                 ? OutlinedButton(
                                     onPressed: () => _updateStatus(delivery, status),
                                     style: OutlinedButton.styleFrom(
-                                      foregroundColor: Colors.red,
+                                      foregroundColor: AppColors.danger,
                                       padding: const EdgeInsets.symmetric(vertical: 14),
                                     ),
                                     child: const Text('Gagal'),
@@ -259,7 +259,7 @@ class _StatusTimeline extends StatelessWidget {
               Icon(
                 i <= currentIndex ? Icons.check_circle : Icons.radio_button_unchecked,
                 size: 20,
-                color: i <= currentIndex ? color : Colors.grey,
+                color: i <= currentIndex ? color : AppColors.textMuted,
               ),
               const SizedBox(width: 12),
               Padding(
@@ -268,7 +268,7 @@ class _StatusTimeline extends StatelessWidget {
                   DeliveryStatus.label(_steps[i]),
                   style: TextStyle(
                     fontWeight: i == currentIndex ? FontWeight.bold : FontWeight.normal,
-                    color: i <= currentIndex ? null : Colors.grey,
+                    color: i <= currentIndex ? null : AppColors.textSecondary,
                   ),
                 ),
               ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../theme/app_colors.dart';
+import '../widgets/brand_logo.dart';
 import 'auth/login_screen.dart';
 import 'home/home_screen.dart';
 
@@ -38,20 +41,34 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.local_shipping_rounded, size: 72, color: Colors.indigo),
-            SizedBox(height: 16),
-            Text(
-              'Kurir ATK',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(gradient: AppColors.brandGradient),
+          child: const SafeArea(
+            child: Column(
+              children: [
+                Spacer(flex: 3),
+                BrandMark(size: 92, onDark: true),
+                SizedBox(height: 24),
+                BrandWordmark(fontSize: 34, onDark: true),
+                SizedBox(height: 10),
+                Text(
+                  'Belanja ATK, diantar sampai tujuan',
+                  style: TextStyle(color: Colors.white70, fontSize: 15),
+                ),
+                Spacer(flex: 3),
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                ),
+                SizedBox(height: 48),
+              ],
             ),
-            SizedBox(height: 24),
-            CircularProgressIndicator(),
-          ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 import '../../providers/cart_provider.dart';
+import '../../theme/app_colors.dart';
 import 'checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
@@ -28,11 +29,11 @@ class CartScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.shopping_cart_outlined, size: 64, color: Colors.grey),
+                  Icon(Icons.shopping_cart_outlined, size: 64, color: AppColors.textMuted),
                   SizedBox(height: 16),
                   Text('Keranjang masih kosong.'),
                   SizedBox(height: 4),
-                  Text('Pilih produk dari tab Katalog.', style: TextStyle(color: Colors.grey)),
+                  Text('Pilih produk dari tab Katalog.', style: TextStyle(color: AppColors.textSecondary)),
                 ],
               ),
             )
@@ -55,7 +56,7 @@ class CartScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Total (${cart.totalQuantity} item)',
-                              style: const TextStyle(color: Colors.grey)),
+                              style: const TextStyle(color: AppColors.textSecondary)),
                           Text(
                             formatRupiah(cart.totalPrice),
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -134,7 +135,7 @@ class _CartItemTile extends StatelessWidget {
                 children: [
                   Text(product.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                   Text('${formatRupiah(product.price)} / ${product.unit}',
-                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                   const SizedBox(height: 4),
                   Text(
                     formatRupiah(item.subtotal),

@@ -11,6 +11,7 @@ import '../../services/api_client.dart';
 import '../../services/order_service.dart';
 import '../../widgets/info_section.dart';
 import '../../widgets/status_chip.dart';
+import '../../theme/app_colors.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   const OrderDetailScreen({super.key, required this.orderId});
@@ -62,7 +63,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Tidak')),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Ya, Batalkan'),
           ),
@@ -287,7 +288,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         onPressed: () => _cancelOrder(order),
         icon: const Icon(Icons.cancel_outlined),
         label: const Text('Batalkan Pesanan'),
-        style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+        style: OutlinedButton.styleFrom(foregroundColor: AppColors.danger),
       ));
     }
 
@@ -323,7 +324,7 @@ class _OrderHeader extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            Text('Dipesan ${formatDateTime(order.createdAt)}', style: const TextStyle(color: Colors.grey)),
+            Text('Dipesan ${formatDateTime(order.createdAt)}', style: const TextStyle(color: AppColors.textSecondary)),
           ],
         ),
       ),
@@ -343,7 +344,7 @@ class _DeliveryInfo extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(Icons.local_shipping_outlined, size: 20, color: Colors.grey),
+            const Icon(Icons.local_shipping_outlined, size: 20, color: AppColors.textMuted),
             const SizedBox(width: 12),
             Expanded(
               child: Text(delivery.trackingNumber, style: const TextStyle(fontWeight: FontWeight.w600)),

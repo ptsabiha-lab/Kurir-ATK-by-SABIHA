@@ -7,6 +7,7 @@ import '../../services/order_service.dart';
 import '../../widgets/paginated_list.dart';
 import '../../widgets/status_chip.dart';
 import 'delivery_detail_screen.dart';
+import '../../theme/app_colors.dart';
 
 /// Daftar tugas pengiriman milik kurir yang sedang login.
 class DeliveryListScreen extends StatelessWidget {
@@ -59,12 +60,12 @@ class _DeliveryCard extends StatelessWidget {
               if (order != null) ...[
                 const SizedBox(height: 4),
                 Text('Pesanan ${order.orderNumber} • ${order.totalQuantity} item',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 const Divider(height: 20),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 18, color: Colors.grey),
+                    const Icon(Icons.location_on_outlined, size: 18, color: AppColors.textMuted),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(order.shippingAddress, maxLines: 2, overflow: TextOverflow.ellipsis),
@@ -74,7 +75,7 @@ class _DeliveryCard extends StatelessWidget {
               ],
               const SizedBox(height: 4),
               Text('Ditugaskan ${formatDateTime(delivery.createdAt)}',
-                  style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
             ],
           ),
         ),
