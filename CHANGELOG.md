@@ -2,6 +2,24 @@
 
 Semua perubahan penting per versi. Arsip kode sumber setiap versi ada di folder [`versions/`](versions/).
 
+## [v1.1] - 2026-09-26
+
+Menggabungkan fitur v1.0 dengan redesain UI biru — sebelumnya keduanya ada di
+branch terpisah sehingga APK yang terpasang di HP hanya berisi salah satunya
+(tampilan lama tanpa menu kurir, atau tampilan baru tanpa keranjang/pesanan).
+
+### Aplikasi (mobile/)
+- Tampilan baru bertema biru untuk semua role: splash, login/daftar, Beranda,
+  Katalog, detail produk, Akun
+- Menu bawah per role: pelanggan Beranda/Katalog/Keranjang/Pesanan/Akun,
+  kurir Pengiriman/Akun, admin Pesanan/Katalog/Akun
+- Tombol "Tambah" di detail produk kini benar-benar masuk keranjang
+  (sebelumnya hanya pesan "segera hadir"); tab Pesanan menampilkan riwayat asli
+- Ikon aplikasi & layar pembuka Android memakai logo Kurir ATK (bukan logo Flutter)
+- Perbaikan: total & tombol Checkout di Keranjang berantakan/hilang akibat tema tombol
+- Perbaikan: notifikasi "ditambahkan ke keranjang" tidak pernah hilang dan menutupi tombol Checkout
+- Warna layar keranjang, pesanan, dan pengiriman diselaraskan dengan tema
+
 ## [v1.0] - 2026-09-26
 
 Rilis pertama aplikasi Android (Flutter) + backend Laravel.

@@ -60,15 +60,23 @@ Kirim `mobile/build/app/outputs/flutter-apk/app-release.apk` ke HP (WhatsApp/Dri
 3. Cari IP Mac: `ipconfig getifaddr en0` (mis. `192.168.1.10`)
 4. Di aplikasi, halaman login → ikon **⚙** (kanan atas) → isi `192.168.1.10:8000` → **Tes Koneksi** → **Simpan**
 
+**Fitur/tampilan baru tidak muncul di HP?**
+1. Buka tab **Akun** → lihat tulisan versi di bawah. Harus sesuai versi terbaru (mis. `Versi 1.1.0 (build 2)`).
+   Jika tidak ada tab Akun/tulisan versi, yang terpasang adalah APK lama.
+2. Pastikan APK dibuat dari folder **`mobile/`** di branch terbaru — bukan dari folder lama `flutter_app/`
+   dan bukan dari proyek kosong `~/AndroidStudioProjects/KurirATK` (template Android Studio yang juga bernama "Kurir ATK").
+3. Jika ragu, hapus (uninstall) semua aplikasi "Kurir ATK"/"kurir_atk" di HP, lalu install ulang APK terbaru.
+4. Menu kurir hanya muncul jika login dengan akun ber-role kurir (mis. `kurir@kuriratk.test`).
+
 Jika tes koneksi gagal: cek firewall Mac (*System Settings → Network → Firewall*) dan pastikan Wi-Fi tidak memblokir antar-perangkat (Wi-Fi kantor/kampus/tamu sering begitu — pakai hotspot HP sebagai alternatif).
 
 ### Akun Demo
 
 | Role | Email | Password | Menu di aplikasi |
 |---|---|---|---|
-| Customer | customer@kuriratk.test | password | Katalog, Keranjang, Pesanan, Profil |
-| Kurir | kurir@kuriratk.test | password | Pengiriman, Profil |
-| Admin | admin@kuriratk.test | password | Kelola Pesanan, Katalog, Profil |
+| Customer | customer@kuriratk.test | password | Beranda, Katalog, Keranjang, Pesanan, Akun |
+| Kurir | kurir@kuriratk.test | password | Pengiriman, Akun |
+| Admin | admin@kuriratk.test | password | Kelola Pesanan, Katalog, Akun |
 
 ### Alur Lengkap
 
