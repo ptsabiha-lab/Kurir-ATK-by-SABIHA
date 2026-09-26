@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/catalog_provider.dart';
 import 'screens/splash_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const KurirAtkApp());
@@ -22,10 +23,7 @@ class KurirAtkApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Kurir ATK',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorSchemeSeed: Colors.indigo,
-          useMaterial3: true,
-        ),
+        theme: AppTheme.light,
         home: const SplashScreen(),
       ),
     );
